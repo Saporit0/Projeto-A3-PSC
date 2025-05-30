@@ -1,0 +1,38 @@
+create DATABASE if not exists Acai;
+show databases;
+use Acai;
+create table if not exists Usuario(
+idUsuario int primary key auto_increment,
+nome varchar(50) not null,
+email varchar(50) not null, 
+cpf int not null,
+senha varchar(20) not null
+);
+create table if not exists Endereco(
+idUsuario int primary key,
+rua varchar(100) not null,
+bairro varchar(30) not null,
+numero int not null,
+cep int not null,
+foreign key (idUsuario) references Usuario(idUsuario)
+);
+create table Produto(
+idProduto int primary key auto_increment,
+nomeProduto varchar(30) not null,
+preco double(8, 2) not null
+);
+create table Estoque(
+idEstoque int primary key auto_increment,
+idProduto int not null,
+quantidade int not null,
+foreign key (idProduto) references Produto(idProduto)
+);
+
+show tables;
+describe Usuario;
+describe Endereco;
+describe Produto;
+describe Estoque;
+
+SELECT * FROM usuario;
+SELECT * FROM endereco;
