@@ -57,8 +57,9 @@ public class TelaLogin extends JFrame {
                 if (dao.autenticar(usuario)) {
                     JOptionPane.showMessageDialog(null, "Login bem-sucedido!");
 
-                    dispose(); // Fecha a tela de login
-                    // Aqui poderia abrir nova janela ou dashboard
+                    dispose();
+                    
+                    new TelaProduto();
                     
                 } else {
                     JOptionPane.showMessageDialog(null, "Email ou senha inválidos.");

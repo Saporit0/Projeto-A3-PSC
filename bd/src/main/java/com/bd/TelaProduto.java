@@ -8,51 +8,54 @@ import java.util.List;
 
 public class TelaProduto extends JFrame {
 
-    private JTable tabela;
-    private DefaultTableModel modeloTabela;
-    private EstoqueDAO dao;
+    private JTable tabelaProduto;
+    private DefaultTableModel modeloTabelaProduto;
+    private ProdutoDAO dao;
 
     public TelaProduto() {
+
         setTitle("Lista de Produtos");
         setSize(800, 400);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        dao = new EstoqueDAO();
+        dao = new ProdutoDAO();
 
-        String[] colunas = { "ID", "Produto", "Preço", "Quantidade", "ID_ESTOQUE" };
-        modeloTabela = new DefaultTableModel(null, colunas) {
+        String[] colunasProduto = { "ID_Produto", "Nome", "Preço", "Entrada", "Saida" };
+        modeloTabelaProduto = new DefaultTableModel(null, colunasProduto) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
 
-        tabela = new JTable(modeloTabela);
-        JScrollPane scroll = new JScrollPane(tabela);
+        tabelaProduto = new JTable(modeloTabelaProduto);
+        JScrollPane scroll1 = new JScrollPane(tabelaProduto);
 
-        JPanel painelBotoes = new JPanel();
-        painelBotoes.setLayout(new GridLayout(4, 1, 5, 5));
+        JPanel painelBotoesProduto = new JPanel();
+        painelBotoesProduto.setLayout(new GridLayout(4, 1, 5, 5));
 
-        JButton botaoAdicionar = new JButton("Adicionar");
-        JButton botaoEditar = new JButton("Editar");
-        JButton botaoExcluir = new JButton("Excluir");
-        JButton botaoAtualizar = new JButton("Atualizar");
+        JButton botaoAdicionarProduto = new JButton("Adicionar");
+        JButton botaoEditarProduto = new JButton("Editar");
+        JButton botaoExcluirProduto = new JButton("Excluir");
+        JButton botaoAtualizarProduto = new JButton("Atualizar");
+        JButton botaoMovimento = new JButton("Controle de Movimento");
 
-        painelBotoes.add(botaoAdicionar);
-        painelBotoes.add(botaoEditar);
-        painelBotoes.add(botaoExcluir);
-        painelBotoes.add(botaoAtualizar);
+        painelBotoesProduto.add(botaoAdicionarProduto);
+        painelBotoesProduto.add(botaoEditarProduto);
+        painelBotoesProduto.add(botaoExcluirProduto);
+        painelBotoesProduto.add(botaoAtualizarProduto);
+        painelBotoesProduto.add(botaoMovimento);
 
         setLayout(new BorderLayout(10, 10));
-        add(scroll, BorderLayout.CENTER);
-        add(painelBotoes, BorderLayout.EAST);
+        add(scroll1, BorderLayout.CENTER);
+        add(painelBotoesProduto, BorderLayout.EAST);
 
-        atualizarTabela();
+        atualizarTabelaProduto();
 
-        botaoAdicionar.addActionListener(e -> abrirDialogoProduto(null));
+        botaoAdicionarProduto.addActionListener(e -> abrirDialogoProduto(null));
 
-        botaoEditar.addActionListener(e -> {
-            int linhaSelecionada = tabela.getSelectedRow();
+        botaoEditarProduto.addActionListener(e -> {
+            int linhaSelecionada = tabelaProduto.getSelectedRow();
             if (linhaSelecionada == -1) {
                 JOptionPane.showMessageDialog(this, "Selecione um produto para editar.");
                 return;
@@ -61,128 +64,124 @@ public class TelaProduto extends JFrame {
             abrirDialogoProduto(produtoSelecionado);
         });
 
-        botaoExcluir.addActionListener(e -> {
-            int linhaSelecionada = tabela.getSelectedRow();
+        botaoExcluirProduto.addActionListener(e -> {
+            int linhaSelecionada = tabelaProduto.getSelectedRow();
             if (linhaSelecionada == -1) {
                 JOptionPane.showMessageDialog(this, "Selecione um produto para excluir.");
                 return;
             }
-            int confirm = JOptionPane.showConfirmDialog(this, "Confirma exclusão?", "Excluir",
+            int confirm = JOptionPane.showConfirmDialog(this, "Confirmar exclusão?", "Excluir",
                     JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
                 Produto produtoSelecionado = getProdutoDaLinha(linhaSelecionada);
-                if (dao.excluir(produtoSelecionado.getIdProduto())) {
+                if (dao.excluirProduto(produtoSelecionado.getIdProduto())) {
                     JOptionPane.showMessageDialog(this, "Produto excluído com sucesso.");
-                    atualizarTabela();
+                    atualizarTabelaProduto();
                 } else {
-                    JOptionPane.showMessageDialog(this, "Erro ao excluir Produto.");
+                    JOptionPane.showMessageDialog(this, "Erro ao excluir produto.");
                 }
             }
         });
 
-        botaoAtualizar.addActionListener(e -> atualizarTabela());
+        botaoAtualizarProduto.addActionListener(e -> atualizarTabelaProduto());
 
         setVisible(true);
-    }
 
-    private void atualizarTabela() {
+        botaoMovimento.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new TelaMovimento();
+            }
+        });
+    }
+    
+
+    private void atualizarTabelaProduto() {
         List<Produto> produtos = dao.listarProduto();
-        modeloTabela.setRowCount(0);
+        modeloTabelaProduto.setRowCount(0);
 
         for (Produto produto : produtos) {
             Object[] linha = {
                     produto.getIdProduto(),
                     produto.getNomeProduto(),
-                    produto.getPreco()
+                    produto.getPreco(),
+                    produto.getEntrada(),
+                    produto.getSaida()
             };
-            modeloTabela.addRow(linha);
-        }
-
-        List<Estoque> estoques = dao.listarEstoque();
-
-        for (Estoque estoque : estoques) {
-            Object[] linha = {
-                    estoque.getIdEstoque(),
-                    estoque.getQuantidade()
-            };
-
-            modeloTabela.addRow(linha);
+            modeloTabelaProduto.addRow(linha);
         }
     }
 
     private Produto getProdutoDaLinha(int linha) {
-    int idProduto = (int) modeloTabela.getValueAt(linha, 0);
-    String nomeProduto = (String) modeloTabela.getValueAt(linha, 1);
-    String preco = (String) modeloTabela.getValueAt(linha, 2);
-    return new Produto(idProduto, nomeProduto, preco);
+        int idProduto = (int) modeloTabelaProduto.getValueAt(linha, 0);
+        String nomeProduto = (String) modeloTabelaProduto.getValueAt(linha, 1);
+        String preco = (String) modeloTabelaProduto.getValueAt(linha, 2);
+        int entrada = (int) modeloTabelaProduto.getValueAt(linha, 3);
+        int saida = (int) modeloTabelaProduto.getValueAt(linha, 4);
 
-    }
-    private Estoque getEstoqueDaLinha(int linha){
-        int idEstoque = (int) modeloTabela.getValueAt(linha, 4);
-        String quantidade = (String) modeloTabela.getValueAt(linha, 5);
-        return new Estoque(quantidade, idEstoque);
+        return new Produto(idProduto, nomeProduto, preco, entrada, saida);
     }
 
-    private void abrirDialogoAluno(Produto produto) {
-        boolean editar = produto != null; // Se tem aluno → é edição
+    private void abrirDialogoProduto(Produto produto) {
+        boolean editar = produto != null;
 
-        // Campos de entrada
         JTextField campoNomeProduto = new JTextField();
         JTextField campoPreco = new JTextField();
-        JTextField campoQuantidade = new JTextField();
+        JTextField campoEntrada = new JTextField();
+        JTextField campoSaida = new JTextField();
 
         if (editar) {
             campoNomeProduto.setText(produto.getNomeProduto());
             campoPreco.setText(produto.getPreco());
-            campoQuantidade.setText(produto.getQuantidade());
+            campoEntrada.setText(String.valueOf(produto.getEntrada()));
+            campoSaida.setText(String.valueOf(produto.getSaida()));
         }
 
         Object[] campos = {
-                "Nome do Produto:", campoNomeProduto,
-                "RA:", campoPreco,
-                "Nota:", campoQuantidade,
-                "Telefone:", campoTelefone,
-                "Senha:", campoSenha
+                "Nome:", campoNomeProduto,
+                "Preço:", campoPreco,
+                "Entrada:", campoEntrada,
+                "Saida:", campoSaida
         };
 
-        int opcao = JOptionPane.showConfirmDialog(this, campos, editar ? "Editar Aluno" : "Adicionar Aluno", JOptionPane.OK_CANCEL_OPTION);
+        int opcao = JOptionPane.showConfirmDialog(this, campos, editar ? "Editar Produto" : "Adicionar Produto",
+                JOptionPane.OK_CANCEL_OPTION);
 
         if (opcao == JOptionPane.OK_OPTION) {
             try {
-                String nomeProduto  = campoNomeProduto.getText();
-                String ra = campoPreco.getText();
-                double nota = Double.parseDouble(campoQuantidade.getText());
-                String telefone = campoTelefone.getText();
-                String senha = campoSenha.getText();
+                String nomeProduto = campoNomeProduto.getText();
+                String preco = campoPreco.getText();
+                String entradaTexto = campoEntrada.getText();
+                String saidaTexto = campoSaida.getText();
 
-                // Validação básica
-                if (nome.isEmpty() || ra.isEmpty() || telefone.isEmpty() || senha.isEmpty()) {
+                if (nomeProduto.isEmpty() || preco.isEmpty() || entradaTexto.isEmpty() || saidaTexto.isEmpty()) {
                     JOptionPane.showMessageDialog(this, "Todos os campos devem ser preenchidos.");
                     return;
                 }
-
+                int entrada = Integer.parseInt(entradaTexto);
+                int saida = Integer.parseInt(saidaTexto);
                 if (editar) {
-                    Aluno alunoEditado = new Aluno(aluno.getIdAluno(), nome, ra, nota, telefone, senha);
-                    if (dao.editar(alunoEditado)) {
-                        JOptionPane.showMessageDialog(this, "Aluno atualizado com sucesso.");
-                        atualizarTabela();
+                    Produto produtoEditado = new Produto(produto.getIdProduto(), nomeProduto, preco, entrada, saida);
+                    if (dao.editarProduto(produtoEditado)) {
+                        JOptionPane.showMessageDialog(this, "Produto atualizado com sucesso.");
+                        atualizarTabelaProduto();
                     } else {
-                        JOptionPane.showMessageDialog(this, "Erro ao atualizar aluno.");
+                        JOptionPane.showMessageDialog(this, "Erro ao atualizar produto.");
                     }
                 } else {
-                    Aluno novoAluno = new Aluno(nome, ra, nota, telefone, senha);
-                    if (dao.adicionar(novoAluno)) {
-                        JOptionPane.showMessageDialog(this, "Aluno adicionado com sucesso.");
-                        atualizarTabela();
+                    Produto novoProduto = new Produto(nomeProduto, preco, entrada, saida);
+                    if (dao.adicionarProduto(novoProduto) != -1) {
+                        JOptionPane.showMessageDialog(this, "Produto adicionado com sucesso.");
+                        atualizarTabelaProduto();
                     } else {
-                        JOptionPane.showMessageDialog(this, "Erro ao adicionar aluno.");
+                        JOptionPane.showMessageDialog(this, "Erro ao adicionar produto.");
                     }
                 }
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Nota deve ser um número válido.");
+                JOptionPane.showMessageDialog(this, "Erro ao adicionar/editar produto.");
+
             }
         }
     }
-
 }
-

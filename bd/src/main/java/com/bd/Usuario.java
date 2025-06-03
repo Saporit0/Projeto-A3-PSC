@@ -1,15 +1,13 @@
 package com.bd;
 
-import java.util.Scanner;
-
 public class Usuario {
 
-    Scanner scanner = new Scanner(System.in);
     private int idUsuario;
     private String nome;
     private String email;
     private String cpf;
     private String senha;
+    private boolean adm;
 
     public Usuario(int idUsuario, String nome, String email, String cpf, String senha) {
 
@@ -32,6 +30,7 @@ public class Usuario {
 
         this.email = email;
         this.senha = senha;
+        this.adm = false;
     }
 
     public int getIdUsuario() {

@@ -49,7 +49,7 @@ public class UsuarioDAO {
             System.out.println("Erro ao adicionar usuario: " + e.getMessage());
         }
 
-        return idGerado; // Retorna -1 se deu erro, ou o ID gerado se deu certo
+        return idGerado;
     }
 
     public boolean cadastroEndereco(Endereco endereco) {
