@@ -1,3 +1,4 @@
+
 package com.bd;
 
 import javax.swing.*;
@@ -111,15 +112,20 @@ public class TelaMovimento extends JFrame {
     }
 
     private void abrirDialogoMovimento(Movimento movimento) {
-
+        JTextField campoIdProduto = new JTextField();
         JTextField campoPreco = new JTextField();
         JTextField campoQuantidade = new JTextField();
         JCheckBox checkEEntrada = new JCheckBox("É Entrada?");
 
+        if (movimento != null) {
+            campoIdProduto.setText(String.valueOf(movimento.getIdProduto()));
             campoPreco.setText(String.valueOf(movimento.getPreco()));
             campoQuantidade.setText(String.valueOf(movimento.getQuantidade()));
+            checkEEntrada.setSelected(movimento.isEEntrada());
+        }
 
         Object[] campos = {
+                "ID do Produto:", campoIdProduto,
                 "Preço:", campoPreco,
                 "Quantidade:", campoQuantidade,
                 "É Entrada:", checkEEntrada
@@ -130,19 +136,22 @@ public class TelaMovimento extends JFrame {
 
         if (opcao == JOptionPane.OK_OPTION) {
             try {
+
+                String idProdutoTexto = campoIdProduto.getText();
                 String precoTexto = campoPreco.getText();
                 String quantidadeTexto = campoQuantidade.getText();
                 boolean eEntrada = checkEEntrada.isSelected();
 
-                if (precoTexto.isEmpty() || quantidadeTexto.isEmpty()) {
+                if (precoTexto.isEmpty() || quantidadeTexto.isEmpty() || idProdutoTexto.isEmpty()) {
                     JOptionPane.showMessageDialog(this, "Todos os campos devem ser preenchidos.");
                     return;
                 }
 
+                int idProduto = Integer.parseInt(idProdutoTexto);
                 double preco = Double.parseDouble(precoTexto);
                 int quantidade = Integer.parseInt(quantidadeTexto);
 
-                Movimento novoMovimento = new Movimento(movimento.getIdMovimento(), movimento.getIdProduto(), preco, quantidade, eEntrada); // mesmo duvida de cima :(
+                Movimento novoMovimento = new Movimento(idProduto, preco, quantidade, eEntrada);
                 if (dao.adicionarMovimento(novoMovimento)) {
                     JOptionPane.showMessageDialog(this, "Movimento adicionado com sucesso.");
                     atualizarTabelaMovimento();
@@ -150,9 +159,42 @@ public class TelaMovimento extends JFrame {
                     JOptionPane.showMessageDialog(this, "Erro ao adicionar movimento.");
                 }
 
+                 try {
+                    idProduto = Integer.parseInt(campoIdProduto.getText());
+                    quantidade = Integer.parseInt(campoQuantidade.getText());
+                    eEntrada = checkEEntrada.isSelected();
+                    ProdutoDAO produtoDAO = new ProdutoDAO();
+
+                    Produto produto = produtoDAO.buscarProdutoPorId(idProduto);
+                    if (produto == null) {
+                        JOptionPane.showMessageDialog(this, "Produto com ID " + idProduto + " não encontrado.");
+                        return;
+                    }
+
+                     aplicarMovimento(produto, quantidade, eEntrada, preco);
+                    JOptionPane.showMessageDialog(this, "Movimento aplicado com sucesso.");
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "ID e Quantidade devem ser números.");
+                }
+                ; 
+
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Erro ao adicionar/editar produto."); // Duvida se essa bomba ta certa.
+                JOptionPane.showMessageDialog(this, "Erro ao adicionar/editar produto.");
             }
         }
     }
+
+     private void aplicarMovimento(Produto produto, int quantidade, boolean eEntrada, double preco) {
+        ProdutoDAO produtoDAO = new ProdutoDAO();
+        if (eEntrada) {
+            produto.setSaldo(produto.getSaldo() + quantidade);
+            produto.setPreco(String.valueOf(preco));
+        } else {
+            produto.setSaldo(produto.getSaldo() - quantidade);
+            produto.setPreco(String.valueOf(preco));
+        }
+
+        produtoDAO.editarProduto(produto);
+    } 
+   
 }

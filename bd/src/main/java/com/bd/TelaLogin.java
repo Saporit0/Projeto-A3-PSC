@@ -1,7 +1,6 @@
 package com.bd;
 
 import javax.swing.*;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,28 +14,39 @@ public class TelaLogin extends JFrame {
 
     public TelaLogin() {
         setTitle("Login do Cliente");
-        setSize(300, 200);
-        setLocationRelativeTo(null);
+        setSize(400, 250);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLayout(new GridLayout(3, 2, 5, 5));
+        setLocationRelativeTo(null);
 
+        JPanel painelPrincipal = new JPanel();
+        painelPrincipal.setLayout(new BoxLayout(painelPrincipal, BoxLayout.Y_AXIS));
+        painelPrincipal.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+
+        JPanel painelEmail = new JPanel(new BorderLayout(5, 5));
         JLabel labelEmail = new JLabel("Email:");
-        campoEmail = new JTextField();
+        campoEmail = new JTextField(20);
+        painelEmail.add(labelEmail, BorderLayout.WEST);
+        painelEmail.add(campoEmail, BorderLayout.CENTER);
 
+        JPanel painelSenha = new JPanel(new BorderLayout(5, 5));
         JLabel labelSenha = new JLabel("Senha:");
-        campoSenha = new JPasswordField();
+        campoSenha = new JPasswordField(20);
+        painelSenha.add(labelSenha, BorderLayout.WEST);
+        painelSenha.add(campoSenha, BorderLayout.CENTER);
 
+        JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         botaoLogin = new JButton("Entrar");
-
         botaoCadastro = new JButton("Cadastre-se");
+        painelBotoes.add(botaoLogin);
+        painelBotoes.add(botaoCadastro);
 
-        add(labelEmail);
-        add(campoEmail);
-        add(labelSenha);
-        add(campoSenha);
-        add(new JLabel()); // espaço vazio
-        add(botaoLogin);
-        add(botaoCadastro);
+        painelPrincipal.add(painelEmail);
+        painelPrincipal.add(Box.createRigidArea(new Dimension(0, 10)));
+        painelPrincipal.add(painelSenha);
+        painelPrincipal.add(Box.createRigidArea(new Dimension(0, 20)));
+        painelPrincipal.add(painelBotoes);
+
+        add(painelPrincipal);
 
         botaoCadastro.addActionListener(new ActionListener() {
             @Override
@@ -50,25 +60,23 @@ public class TelaLogin extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String email = campoEmail.getText();
                 String senha = new String(campoSenha.getPassword());
+                boolean adm = true;
 
-                Usuario usuario = new Usuario(email, senha);
-                UsuarioDAO dao = new UsuarioDAO();
+                Usuario usuario = new Usuario(email, senha, adm);
 
-                if (dao.autenticar(usuario)) {
-                    JOptionPane.showMessageDialog(null, "Login bem-sucedido!");
-
+                if (usuario.getEmail().equals("admin") && usuario.getSenha().equals("admin") && usuario.isAdm() == true) {
                     dispose();
-                    
                     new TelaProduto();
-                    
+
                 } else {
-                    JOptionPane.showMessageDialog(null, "Email ou senha inválidos.");
+                    dispose();
+                    new TelaProdutoUsuario();
                 }
+
             }
 
         });
 
         setVisible(true);
     }
-
 }

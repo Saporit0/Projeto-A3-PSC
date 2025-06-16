@@ -20,7 +20,7 @@ public class TelaProduto extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         dao = new ProdutoDAO();
 
-        String[] colunasProduto = { "ID_Produto", "Nome", "Preço", "Entrada", "Saida" };
+        String[] colunasProduto = { "ID_Produto", "Nome", "Preço", "Saldo"};
         modeloTabelaProduto = new DefaultTableModel(null, colunasProduto) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -106,8 +106,7 @@ public class TelaProduto extends JFrame {
                     produto.getIdProduto(),
                     produto.getNomeProduto(),
                     produto.getPreco(),
-                    produto.getEntrada(),
-                    produto.getSaida()
+                    produto.getSaldo()
             };
             modeloTabelaProduto.addRow(linha);
         }
@@ -117,10 +116,9 @@ public class TelaProduto extends JFrame {
         int idProduto = (int) modeloTabelaProduto.getValueAt(linha, 0);
         String nomeProduto = (String) modeloTabelaProduto.getValueAt(linha, 1);
         String preco = (String) modeloTabelaProduto.getValueAt(linha, 2);
-        int entrada = (int) modeloTabelaProduto.getValueAt(linha, 3);
-        int saida = (int) modeloTabelaProduto.getValueAt(linha, 4);
+        int saldo = (int) modeloTabelaProduto.getValueAt(linha, 3);
 
-        return new Produto(idProduto, nomeProduto, preco, entrada, saida);
+        return new Produto(idProduto, nomeProduto, preco, saldo);
     }
 
     private void abrirDialogoProduto(Produto produto) {
@@ -128,21 +126,18 @@ public class TelaProduto extends JFrame {
 
         JTextField campoNomeProduto = new JTextField();
         JTextField campoPreco = new JTextField();
-        JTextField campoEntrada = new JTextField();
-        JTextField campoSaida = new JTextField();
+        JTextField campoSaldo = new JTextField();
 
         if (editar) {
             campoNomeProduto.setText(produto.getNomeProduto());
             campoPreco.setText(produto.getPreco());
-            campoEntrada.setText(String.valueOf(produto.getEntrada()));
-            campoSaida.setText(String.valueOf(produto.getSaida()));
+            campoSaldo.setText(String.valueOf(produto.getSaldo()));
         }
 
         Object[] campos = {
                 "Nome:", campoNomeProduto,
                 "Preço:", campoPreco,
-                "Entrada:", campoEntrada,
-                "Saida:", campoSaida
+                "Saldo:", campoSaldo
         };
 
         int opcao = JOptionPane.showConfirmDialog(this, campos, editar ? "Editar Produto" : "Adicionar Produto",
@@ -152,17 +147,15 @@ public class TelaProduto extends JFrame {
             try {
                 String nomeProduto = campoNomeProduto.getText();
                 String preco = campoPreco.getText();
-                String entradaTexto = campoEntrada.getText();
-                String saidaTexto = campoSaida.getText();
+                String saldoTexto = campoSaldo.getText();
 
-                if (nomeProduto.isEmpty() || preco.isEmpty() || entradaTexto.isEmpty() || saidaTexto.isEmpty()) {
+                if (nomeProduto.isEmpty() || preco.isEmpty() || saldoTexto.isEmpty()) {
                     JOptionPane.showMessageDialog(this, "Todos os campos devem ser preenchidos.");
                     return;
                 }
-                int entrada = Integer.parseInt(entradaTexto);
-                int saida = Integer.parseInt(saidaTexto);
+                int saldo = Integer.parseInt(saldoTexto);
                 if (editar) {
-                    Produto produtoEditado = new Produto(produto.getIdProduto(), nomeProduto, preco, entrada, saida);
+                    Produto produtoEditado = new Produto(produto.getIdProduto(), nomeProduto, preco, saldo);
                     if (dao.editarProduto(produtoEditado)) {
                         JOptionPane.showMessageDialog(this, "Produto atualizado com sucesso.");
                         atualizarTabelaProduto();
@@ -170,7 +163,7 @@ public class TelaProduto extends JFrame {
                         JOptionPane.showMessageDialog(this, "Erro ao atualizar produto.");
                     }
                 } else {
-                    Produto novoProduto = new Produto(nomeProduto, preco, entrada, saida);
+                    Produto novoProduto = new Produto(nomeProduto, preco, saldo);
                     if (dao.adicionarProduto(novoProduto) != -1) {
                         JOptionPane.showMessageDialog(this, "Produto adicionado com sucesso.");
                         atualizarTabelaProduto();

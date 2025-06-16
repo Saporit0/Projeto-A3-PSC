@@ -24,13 +24,14 @@ public class Usuario {
         this.email = email;
         this.cpf = cpf;
         this.senha = senha;
+        this.adm = false;
     }
 
-    public Usuario(String email, String senha) {
+    public Usuario(String email, String senha, boolean adm) {
 
         this.email = email;
         this.senha = senha;
-        this.adm = false;
+        this.adm = adm;
     }
 
     public int getIdUsuario() {
@@ -73,4 +74,13 @@ public class Usuario {
         this.senha = senha;
     }
 
+    public boolean isAdm() {
+        return adm;
+    }
+
+    public void setAdm(boolean adm) {
+        this.adm = adm;
+    }
+
+    
 }

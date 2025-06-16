@@ -17,6 +17,14 @@ public class Movimento {
         this.eEntrada = eEntrada;
     }
 
+      public Movimento(int idProduto, double preco, int quantidade, boolean eEntrada) {
+
+        this.idProduto = idProduto;
+        this.preco = preco;
+        this.quantidade = quantidade;
+        this.eEntrada = eEntrada;
+    }
+
     public int getIdMovimento() {
         return idMovimento;
     }

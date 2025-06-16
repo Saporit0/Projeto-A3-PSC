@@ -8,10 +8,10 @@ import java.awt.event.ActionListener;
 
 public class TelaCadastro extends JFrame {
 
-    private JTextField campoEmail;
     private JTextField campoNome;
-    private JTextField campoCpf;
+    private JTextField campoEmail;
     private JPasswordField campoSenha;
+    private JTextField campoCpf;
     private JTextField campoRua;
     private JTextField campoBairro;
     private JTextField campoNumero;
@@ -19,56 +19,50 @@ public class TelaCadastro extends JFrame {
     private JButton botaoCadastrar;
 
     public TelaCadastro() {
-
-        setTitle("Cadastro do Cliente");
-        setSize(300, 200);
-        setLocationRelativeTo(null);
+        setTitle("Cadastro de Cliente");
+        setSize(500, 500);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLayout(new GridLayout(3, 2, 5, 5));
+        setLocationRelativeTo(null);
 
-        JLabel labelCampoEmail = new JLabel("Email:");
-        campoEmail = new JTextField();
+        // Painel principal
+        JPanel painelPrincipal = new JPanel();
+        painelPrincipal.setLayout(new BoxLayout(painelPrincipal, BoxLayout.Y_AXIS));
+        painelPrincipal.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
-        JLabel labelCampoNome = new JLabel("Nome:");
-        campoNome = new JTextField();
+        // Função utilitária para criar painel de campo
+        painelPrincipal.add(criarPainelCampo("Nome:", campoNome = new JTextField(20)));
+        painelPrincipal.add(Box.createRigidArea(new Dimension(0, 8)));
 
-        JLabel labelCampoCpf = new JLabel("Cpf:");
-        campoCpf = new JTextField();
+        painelPrincipal.add(criarPainelCampo("Email:", campoEmail = new JTextField(20)));
+        painelPrincipal.add(Box.createRigidArea(new Dimension(0, 8)));
 
-        JLabel labelCampoSenha = new JLabel("Senha:");
-        campoSenha = new JPasswordField();
+        painelPrincipal.add(criarPainelCampo("Senha:", campoSenha = new JPasswordField(20)));
+        painelPrincipal.add(Box.createRigidArea(new Dimension(0, 8)));
 
-        JLabel labelCampoRua = new JLabel("Rua:");
-        campoRua = new JTextField();
+        painelPrincipal.add(criarPainelCampo("CPF:", campoCpf = new JTextField(15)));
+        painelPrincipal.add(Box.createRigidArea(new Dimension(0, 8)));
 
-        JLabel labelCampoBairro = new JLabel("Bairro:");
-        campoBairro = new JTextField();
+        painelPrincipal.add(criarPainelCampo("Rua:", campoRua = new JTextField(20)));
+        painelPrincipal.add(Box.createRigidArea(new Dimension(0, 8)));
 
-        JLabel labelCampoNumero = new JLabel("Numero:");
-        campoNumero = new JTextField();
+        painelPrincipal.add(criarPainelCampo("Bairro:", campoBairro = new JTextField(20)));
+        painelPrincipal.add(Box.createRigidArea(new Dimension(0, 8)));
 
-        JLabel labelCampoCep = new JLabel("Cep:");
-        campoCep = new JTextField();
+        painelPrincipal.add(criarPainelCampo("Número:", campoNumero = new JTextField(6)));
+        painelPrincipal.add(Box.createRigidArea(new Dimension(0, 8)));
 
+        painelPrincipal.add(criarPainelCampo("CEP:", campoCep = new JTextField(10)));
+        painelPrincipal.add(Box.createRigidArea(new Dimension(0, 16)));
+
+        // Botão
+        JPanel painelBotao = new JPanel(new FlowLayout(FlowLayout.CENTER));
         botaoCadastrar = new JButton("Cadastrar");
+        painelBotao.add(botaoCadastrar);
 
-        add(labelCampoEmail);
-        add(campoEmail);
-        add(labelCampoNome);
-        add(campoNome);
-        add(labelCampoCpf);
-        add(campoCpf);
-        add(labelCampoSenha);
-        add(campoSenha);
-        add(labelCampoRua);
-        add(campoRua);
-        add(labelCampoBairro);
-        add(campoBairro);
-        add(labelCampoNumero);
-        add(campoNumero);
-        add(labelCampoCep);
-        add(campoCep);
-        add(botaoCadastrar);
+        painelPrincipal.add(painelBotao);
+
+        add(painelPrincipal);
+        setVisible(true);
 
         botaoCadastrar.addActionListener(new ActionListener() {
             @Override
@@ -85,7 +79,7 @@ public class TelaCadastro extends JFrame {
                 Usuario usuario = new Usuario(nome, email, cpf, senha);
                 UsuarioDAO dao = new UsuarioDAO();
                 int idUsuario = dao.cadastroUsuario(usuario);
-                
+
                 if (idUsuario != -1) {
                     Endereco endereco = new Endereco(rua, bairro, numero, cep, idUsuario);
                     if (dao.cadastroEndereco(endereco))
@@ -105,4 +99,15 @@ public class TelaCadastro extends JFrame {
 
         setVisible(true);
     }
+
+    // Método utilitário para criar painéis de campo com label + campo
+    private JPanel criarPainelCampo(String textoLabel, JComponent campo) {
+        JPanel painel = new JPanel(new BorderLayout(5, 5));
+        JLabel label = new JLabel(textoLabel);
+        label.setPreferredSize(new Dimension(70, 25));
+        painel.add(label, BorderLayout.WEST);
+        painel.add(campo, BorderLayout.CENTER);
+        return painel;
+    }
+
 }

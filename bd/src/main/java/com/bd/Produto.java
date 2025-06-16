@@ -5,40 +5,39 @@ public class Produto {
     private String nomeProduto;
     private int idProduto;
     private String preco;
-    private int entrada;
-    private int saida;
+    private int saldo;
 
-    public Produto(int idProduto, String nomeProduto, String preco, int entrada, int saida) {
+    public Produto(String nomeProduto, String preco, int saldo) {
 
         this.nomeProduto = nomeProduto;
+        this.preco = preco;
+        this.saldo = saldo;
+    }
+
+    public Produto(int idProduto, String nomeProduto, String preco, int saldo) {
+
+        this.nomeProduto = nomeProduto;
+        this.preco = preco;
+        this.saldo = saldo;
         this.idProduto = idProduto;
-        this.preco = preco;
-        this.entrada = entrada;
-        this.saida = saida;
     }
 
-    public Produto(String nomeProduto, String preco, int entrada, int saida) {
+    public Produto(int idProduto, String nomeProduto, String preco){
+        
+        this.idProduto = idProduto;
+        this.nomeProduto = nomeProduto;
+        this.preco = preco;
+
+    }
+
+    public Produto(String nomeProduto, String preco) {
 
         this.nomeProduto = nomeProduto;
         this.preco = preco;
-        this.entrada = entrada;
-        this.saida = saida;
     }
 
-    public int getEntrada() {
-        return entrada;
-    }
-
-    public void setEntrada(int entrada) {
-        this.entrada = entrada;
-    }
-
-    public int getSaida() {
-        return saida;
-    }
-
-    public void setSaida(int saida) {
-        this.saida = saida;
+    public void setSaldo(int saldo) {
+        this.saldo = saldo;
     }
 
     public String getNomeProduto() {
@@ -65,4 +64,7 @@ public class Produto {
         this.preco = preco;
     }
 
+    public int getSaldo() {
+        return saldo;
+    }
 }

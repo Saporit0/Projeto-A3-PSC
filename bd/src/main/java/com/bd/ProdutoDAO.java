@@ -11,16 +11,14 @@ import java.util.List;
 public class ProdutoDAO {
 
     public int adicionarProduto(Produto produto) {
-        String sql = "INSERT INTO Produto (nomeProduto, preco, entrada, saida) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Produto (nomeProduto, preco, saldo) VALUES (?, ?, ?)";
         int idGerado = -1;
         try (Connection conn = ConnectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, produto.getNomeProduto());
             stmt.setString(2, produto.getPreco());
-            stmt.setInt(3, produto.getEntrada());
-            stmt.setInt(4, produto.getSaida());
-            // Duvida usar getEntrada e getSaida em operações e substituir por quantidade;
+            stmt.setInt(3, produto.getSaldo());
             int rows = stmt.executeUpdate();
 
             if (rows > 0) {
@@ -54,16 +52,15 @@ public class ProdutoDAO {
     }
 
     public boolean editarProduto(Produto produto) {
-        String sql = "UPDATE produto SET nomeProduto = ?, preco = ?, entrada = ?, saida = ? WHERE idProduto = ?";
+        String sql = "UPDATE produto SET nomeProduto = ?, preco = ?, saldo = ? WHERE idProduto = ?";
 
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            // Seta os novos valores para o produto existente
             stmt.setString(1, produto.getNomeProduto());
             stmt.setString(2, produto.getPreco());
-            stmt.setInt(3, produto.getEntrada());
-            stmt.setInt(4, produto.getSaida());
+            stmt.setInt(3, produto.getSaldo());
+            stmt.setInt(4, produto.getIdProduto());
 
             int rows = stmt.executeUpdate();
             return rows > 0;
@@ -75,7 +72,7 @@ public class ProdutoDAO {
 
     public List<Produto> listarProduto() {
         List<Produto> produtos = new ArrayList<>(); 
-        String sql = "SELECT idProduto, nomeProduto, preco, entrada, saida FROM Produto";
+        String sql = "SELECT idProduto, nomeProduto, preco, saldo FROM Produto";
 
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -86,8 +83,7 @@ public class ProdutoDAO {
                         rs.getInt("idProduto"),
                         rs.getString("nomeProduto"),
                         rs.getString("preco"),
-                        rs.getInt("entrada"),
-                        rs.getInt("saida")
+                        rs.getInt("saldo")
                 );
                 produtos.add(produto); 
             }
@@ -96,5 +92,24 @@ public class ProdutoDAO {
         }
         return produtos; 
     }
-    
+
+    public Produto buscarProdutoPorId(int id) {
+    String sql = "SELECT * FROM Produto WHERE idProduto = ?";
+    try (Connection conn = ConnectionFactory.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setInt(1, id);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            return new Produto(
+                rs.getInt("idProduto"),
+                rs.getString("nomeProduto"),
+                rs.getString("preco"),
+                rs.getInt("saldo")
+            );
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return null;
+}
+   
 }

@@ -14,8 +14,12 @@ public class UsuarioDAO {
 
             stmt.setString(1, usuario.getEmail());
             stmt.setString(2, usuario.getSenha());
+            stmt.setBoolean(3, usuario.isAdm());
 
             ResultSet rs = stmt.executeQuery();
+            if(rs.next()){
+                usuario.setAdm(rs.getBoolean("adm"));
+            }
 
             return rs.next();
         } catch (SQLException e) {
@@ -25,7 +29,7 @@ public class UsuarioDAO {
     }
 
     public int cadastroUsuario(Usuario usuario) {
-        String sql = "INSERT INTO usuario (nome, email, cpf, senha) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO usuario (nome, email, cpf, senha, adm) VALUES (?, ?, ?, ?, ?)";
         int idGerado = -1;
 
         try (Connection conn = ConnectionFactory.getConnection();
@@ -35,6 +39,7 @@ public class UsuarioDAO {
             stmt.setString(2, usuario.getEmail());
             stmt.setString(3, usuario.getCpf());
             stmt.setString(4, usuario.getSenha());
+            stmt.setBoolean(5, usuario.isAdm());
 
             int rows = stmt.executeUpdate();
 
